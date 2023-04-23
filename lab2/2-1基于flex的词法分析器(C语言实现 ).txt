@@ -13,6 +13,11 @@ enum Token {
     LEX_ERR
 };
 
+// int lerror(int yylineno, char *yytext) {
+//     printf("Lexical error - line %d : %s\n",yylineno,yytext);
+//     return LEX_ERR;
+// }
+// #define LERROR() lerror(yylineno, yytext)
 %}
 
 DIGIT [0-9]
@@ -26,7 +31,6 @@ INTEGER [+-]?{DEC_INTEGER}|{HEX_INTEGER}|{OCTAL_INTEGER}
 
 FLOAT [+-]?(([.][0-9]+([eE][+-]?[0-9]+)?[fF]?)|([0-9]+[.][0-9]*([eE][+-]?[0-9]+)?[fF]?)|([0-9]+[eE][+-]?[0-9]+[fF]?))
 
-INTEGERID {INTEGER}{IDEN}
 
 MultilineComment "/*"([^\*]|(\*)*[^\*/])*(\*)*"*/"
 SingleLineComment "//".*$
@@ -75,7 +79,6 @@ SingleLineComment "//".*$
 {IDEN} {printf("%s : ID\n", yytext); return ID; }
 {INTEGER} {
     if ('0' == yytext[0] && 'x' != yytext[1] && 'X' != yytext[1]) {
-        // octal
         for(char *c = yytext; *c != '\0'; c++) {
             if (*c < '0' || *c > '7') {
                 printf("Lexical error - line %d : %s\n",yylineno,yytext);
@@ -86,7 +89,7 @@ SingleLineComment "//".*$
     printf("%s : INT_LIT\n", yytext); 
     return INT_LIT; 
 }
-{INTEGERID} {printf("Lexical error - line %d : %s\n",yylineno,yytext);return LEX_ERR;}
+
 {MultilineComment} {}
 {SingleLineComment} {}
 
@@ -95,6 +98,8 @@ SingleLineComment "//".*$
 [ \r\t] {}
 [ \n\t]+ {}
 . {printf("Lexical error - line %d : %s\n",yylineno,yytext);return LEX_ERR;}
+{INTEGER}{IDEN} {printf("Lexical error - line %d : %s\n",yylineno,yytext);return LEX_ERR;}
+
 
 %%
 
@@ -115,3 +120,4 @@ int main(int argc, char** argv) {
     return 0; 
     
 }
+
