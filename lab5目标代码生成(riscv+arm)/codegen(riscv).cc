@@ -84,19 +84,13 @@ bool codeGenerate(const std::string &ir_filename,
   //    通常还应在调用函数后检查EC，if (EC) 则表明有错误发生(无法创建目标文件)，此时应该输出提示信息后return 1
   // (3) 实例化legacy::PassManager类的对象pass
   // (4) 为file_type赋初值。
-  legacy::PassManager pass;
-  auto Filename = getGenFilename(ir_filename, gen_filetype);
-  std::error_code EC;
-  raw_fd_ostream dest(Filename, EC, sys::fs::OF_None);
-  if(EC) return 1;
-  auto file_type = CGFT_AssemblyFile;
 
-auto filename = getGenFilename(ir_filename, gen_filetype);
-std::error_code EC;
-raw_fd_ostream dest(filename, EC, sys::fs::OF_None);
-if(EC) return 1;
-legacy::PassManager pass;
-auto file_type = CGFT_AssemblyFile;
+  auto filename = getGenFilename(ir_filename, gen_filetype);
+  std::error_code EC;
+  raw_fd_ostream dest(filename, EC, sys::fs::OF_None);
+  if(EC) return 1;
+  legacy::PassManager pass;
+  auto file_type = gen_filetype;
 
   if (TheTargetMachine->addPassesToEmitFile(pass, dest, nullptr, file_type)) {
     errs() << "TheTargetMachine can't emit a file of this type";
